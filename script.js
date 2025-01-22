@@ -63,11 +63,21 @@ const { requestEditor, updateResponseEditor } = setupEditors();
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
+  let jsonData;
+  try {
+    jsonData = JSON.parse(requestEditor.state.doc.toString() || null);
+  } catch (e) {
+    console.log(e);
+    alert(`JSON data is malformed. Please correct it and try again.\n${e}`);
+    return;
+  }
+
   axios({
     url: document.querySelector("[data-url]").value,
     method: document.querySelector("[data-method]").value,
     params: keyValuePairsToObject(queryParamsContainer),
     headers: keyValuePairsToObject(requestHeadersContainer),
+    data: jsonData,
   })
     .catch((e) => e)
     .then((response) => {
